@@ -1,0 +1,109 @@
+PROJECT OVERVIEW
+
+This project builds and evaluates a multiclass intrusion detection system (IDS)
+to classify network flows from the CIC-IDS2017 Wednesday dataset into five
+classes: BENIGN, DoS Hulk, DoS GoldenEye, DoS slowloris, and DoS Slowhttptest.
+
+Two models are trained and compared:
+  - LightGBM (primary model)          — macro F1 = 0.9951 on 175,488 test flows
+  - MLP / Neural Network (comparison) — macro F1 = 0.9883 on 175,488 test flows
+
+
+REPOSITORY CONTENTS
+
+The submission zip contains:
+
+  Report_2141045.ipynb                  — Main coursework report (read this first)
+  Source_Code_2141045.ipynb             — Full training pipeline with all code and outputs
+  Trained_Models_Demo_and_Results.ipynb — Quick demo loading pre-trained models
+  models/
+      lgbm_dos_classifier.pkl           — Saved LightGBM pipeline (includes scaler)
+      mlp_dos_classifier.pkl            — Saved MLP pipeline (includes StandardScaler)
+      label_encoder.pkl                 — Fitted LabelEncoder for class names
+  README.txt                            — This file
+
+The cleaned dataset is included in both the zip (47 MB) and GitHub repo.
+Download it from: https://github.com/nasrinpnazar/AICS-submission-2141045
+  File: wednesday_cleaned.csv.gz
+
+Place wednesday_cleaned.csv.gz in the SAME folder as the notebooks before
+running any cells.
+
+
+ENVIRONMENT REQUIREMENTS
+
+Developed and tested on Python 3.11.9.
+
+Install all dependencies with:
+
+    pip install lightgbm scikit-learn pandas numpy matplotlib seaborn joblib
+
+Exact versions used during development (as printed by Source_Code_2141045.ipynb,
+Cell 2 — NumPy/Pandas/LightGBM are printed automatically; re-run that cell to
+confirm versions in your own environment):
+    numpy          2.4.6
+    pandas         3.0.3
+    lightgbm       4.6.0
+    scikit-learn   1.3 or later (not explicitly version-printed; any release
+                   supporting Pipeline, StandardScaler, and MLPClassifier as
+                   used in this project is compatible)
+    matplotlib, seaborn, joblib: any reasonably recent release
+
+
+HOW TO RUN
+View results only (fastest — ~1 minute)
+
+1. Download wednesday_cleaned.csv.gz from GitHub and place in the same folder
+2. Open Trained_Models_Demo_and_Results.ipynb
+3. Run ALL cells top to bottom (Kernel > Restart & Run All)
+   This loads the saved pkl models and reproduces all metrics on the test set.
+   No training is required.
+
+Full retraining (~20-30 minutes)
+
+1. Place the raw Wednesday-workingHours.pcap_ISCX.csv in the same folder
+2. Open Source_Code_2141045.ipynb
+3. Run Cells 1-13 in order to retrain both models from scratch
+4. Cell 15 re-saves the three .pkl files into models/
+
+--------------------------------------------------------------------------------
+IMPORTANT NOTES FOR THE MARKER
+--------------------------------------------------------------------------------
+1. RANDOM SEED: All splits use SEED=42 and stratified sampling. Running the
+   code in any order will reproduce identical train/test splits and results.
+
+2. PRE-SAVED OUTPUTS: All code cells in Report_2141045.ipynb have pre-saved
+   outputs. The report can be read end-to-end without executing any cells.
+
+3. MODELS FOLDER: The models/ folder must remain in the same directory as the
+   notebooks. The pkl files are large (~70 MB for LightGBM) and contain the
+   full fitted pipeline including any preprocessing steps.
+
+4. WORD COUNT: The report targets 4,000 words (+10% buffer = 4,400). A word
+   count checker cell is included near the end of Report_2141045.ipynb and
+   confirms 4,383 words. Tables, figures, references, the TOC, and the AI
+   Declaration appendix are excluded from the count per the brief guidelines.
+
+5. DATASET NOTE: The raw CIC-IDS2017 Wednesday CSV (692,703 rows) is not
+   included. wednesday_cleaned.csv.gz (584,959 rows, 62 features) is the
+   output of the cleaning pipeline documented in Source_Code_2141045.ipynb
+   Cells 3-4 and Report Section 2.2. It is available on GitHub as noted above.
+
+6. AI DECLARATION: See the Appendix at the end of Report_2141045.ipynb for a
+   full description of AI tool use, list of prompts, and critical assessment
+   of AI-generated content, as required by the brief.
+
+--------------------------------------------------------------------------------
+RESULTS SUMMARY
+--------------------------------------------------------------------------------
+Test set: 175,488 flows (30% stratified hold-out, SEED=42)
+
+  Model         Accuracy    Macro F1    Macro Prec.  Macro Recall
+  LightGBM      0.9994      0.9951      0.9929       0.9974
+  MLP           0.9954      0.9883      0.9875       0.9892
+
+Majority-class baseline (always predict BENIGN), computed empirically with a
+DummyClassifier:
+  Accuracy = 0.6688   Macro F1 = 0.1603
+
+LightGBM improvement over baseline: +0.8348 macro F1
